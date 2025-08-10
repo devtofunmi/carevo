@@ -8,27 +8,27 @@ export default function Navigation() {
           <div className="flex items-center">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
               C
-  
-}/nav>
-  );iv>
-    <   </d </div>
-   >
-         </divk>
-        Lin   </        tarted
- et S      G              >
-"
-      iumedors font-mnsition-col00 tra-7lue:bg-b-lg hovernded-4 py-2 rou pxext-whiteblue-600 te="bg-am   classN        p"
-   /signu    href="
-          <Link            </Link>
-            Login
-             >
-     
-        rs"sition-coloedium tranfont-mt-gray-900 texver:ray-600 ho-gxtssName="te  cla        "
-    gin  href="/lo           <Link
-             x-4">
-nter space-tems-ce"flex ie=ssNamcla     <div iv>
-              </d
- /span>   <
-         evo     Car    ">
-     y-900text-grad xl font-bol text-sName="ml-3asclspan         <   /div>
-           <
+            </div>
+            <span className="ml-3 text-xl font-bold text-gray-900">
+              Carevo
+            </span>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Link
+              href="/login"
+              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+            >
+              Login
+            </Link>
+            <Link
+              href="/signup"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              Get Started
+            </Link>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+}
