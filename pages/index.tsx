@@ -31,11 +31,7 @@ function FAQSection() {
       answer:
         "Our Job Tracker is a comprehensive dashboard that monitors all your applications in real-time. It tracks application status, interview schedules, follow-ups, and provides analytics on your job search performance to help you optimize your strategy.",
     },
-    {
-      question: "Does Carevo provide interview and career coaching?",
-      answer:
-        "Yes, our Enterprise plan includes personalized career coaching and interview preparation. Our coaches provide mock interviews, salary negotiation guidance, and career strategy sessions to help you land your dream job.",
-    },
+   
   ];
 
   return (
