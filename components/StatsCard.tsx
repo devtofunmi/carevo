@@ -6,7 +6,7 @@ interface StatsCardProps {
   icon: string;
 }
 
-export default function StatsCard({ title, value, change, changeType = 'neutral', icon }: StatsCardProps) {
+export default function StatsCard({ title, value, change, changeType = 'neutral' }: StatsCardProps) {
   const changeColor = {
     positive: 'text-green-600',
     negative: 'text-red-600',
@@ -25,7 +25,6 @@ export default function StatsCard({ title, value, change, changeType = 'neutral'
             </p>
           )}
         </div>
-        <div className="text-3xl">{icon}</div>
       </div>
     </div>
   );

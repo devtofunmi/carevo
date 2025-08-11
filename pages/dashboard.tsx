@@ -15,29 +15,25 @@ export default function Dashboard() {
             title="Total Applications"
             value={mockUser.totalApplications}
             change="+12 this week"
-            changeType="positive"
-            icon="📊"
+            changeType="positive" icon={''}           
           />
           <StatsCard
             title="Active Applications"
             value={mockUser.activeApplications}
             change="23 pending"
-            changeType="neutral"
-            icon="⏳"
+            changeType="neutral" icon={''}  
           />
           <StatsCard
             title="Interviews"
             value={mockUser.interviews}
             change="+3 scheduled"
-            changeType="positive"
-            icon="🎯"
+            changeType="positive" icon={''}        
           />
           <StatsCard
             title="Offers"
             value={mockUser.offers}
             change="2 pending"
-            changeType="positive"
-            icon="🎉"
+            changeType="positive" icon={''}             
           />
         </div>
 
@@ -79,8 +75,8 @@ export default function Dashboard() {
         <div>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Recent Applications</h2>
-            <button className="text-blue-600 hover:text-blue-700 font-medium">
-              View all applications →
+            <button className="text-blue-600 cursor-pointer hover:text-blue-700 font-medium">
+              View all applications
             </button>
           </div>
           
@@ -91,33 +87,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <span className="text-2xl mr-3">⚙️</span>
-              <div className="text-left">
-                <div className="font-medium">Update Preferences</div>
-                <div className="text-sm text-gray-500">Modify job search criteria</div>
-              </div>
-            </button>
-            <button className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <span className="text-2xl mr-3">📄</span>
-              <div className="text-left">
-                <div className="font-medium">Upload Resume</div>
-                <div className="text-sm text-gray-500">Update your resume</div>
-              </div>
-            </button>
-            <button className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <span className="text-2xl mr-3">🔍</span>
-              <div className="text-left">
-                <div className="font-medium">Discover Jobs</div>
-                <div className="text-sm text-gray-500">Browse new opportunities</div>
-              </div>
-            </button>
-          </div>
-        </div>
+       
       </div>
     </Layout>
   );

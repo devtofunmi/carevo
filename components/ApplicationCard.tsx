@@ -20,15 +20,7 @@ export default function ApplicationCard({ application }: ApplicationCardProps) {
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-4">
-          <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-            {application.logo ? (
-              <img src={application.logo} alt={application.company} className="w-8 h-8 rounded" />
-            ) : (
-              <span className="text-lg font-bold text-gray-600">
-                {application.company.charAt(0)}
-              </span>
-            )}
-          </div>
+          
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900">{application.title}</h3>
             <p className="text-gray-600">{application.company}</p>

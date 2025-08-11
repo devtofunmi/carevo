@@ -2,11 +2,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: '📊' },
-  { name: 'Applications', href: '/applications', icon: '📝' },
-  { name: 'Job Discovery', href: '/discovery', icon: '🔍' },
-  { name: 'Profile', href: '/profile', icon: '👤' },
-  { name: 'Settings', href: '/settings', icon: '⚙️' },
+  { name: 'Dashboard', href: '/dashboard' },
+  { name: 'Applications', href: '/applications' },
+  { name: 'Job Discovery', href: '/discovery' },
+  { name: 'Profile', href: '/profile' },
+  { name: 'Settings', href: '/settings' },
 ];
 
 export default function Sidebar() {
@@ -16,7 +16,7 @@ export default function Sidebar() {
     <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
       <div className="flex h-16 items-center px-6 border-b border-gray-200">
         <div className="flex items-center">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
             C
           </div>
           <span className="ml-3 text-xl font-bold text-gray-900">Carevo</span>
@@ -37,7 +37,6 @@ export default function Sidebar() {
                     : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                 }`}
               >
-                <span className="mr-3 text-lg">{item.icon}</span>
                 {item.name}
               </Link>
             );
