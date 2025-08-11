@@ -126,7 +126,7 @@ export default function SignUp() {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <Link href="/" className="inline-flex items-center">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
             C
           </div>
           <span className="ml-3 text-xl font-bold text-gray-900">carevo</span>
@@ -283,7 +283,7 @@ export default function SignUp() {
                 <button
                   type="button"
                   onClick={handleNextStep}
-                  className="text-blue-600 hover:text-blue-700 font-medium underline"
+                  className="text-blue-600 hover:text-blue-700 font-medium underline cursor-pointer"
                 >
                   Skip for now
                 </button>
@@ -323,7 +323,7 @@ export default function SignUp() {
                       <button
                         type="button"
                         onClick={addJobTitle}
-                        className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
                       >
                         Add
                       </button>
@@ -341,7 +341,7 @@ export default function SignUp() {
                           <button
                             type="button"
                             onClick={() => removeJobTitle(title)}
-                            className="ml-2 text-blue-600 hover:text-blue-800"
+                            className="ml-2 text-blue-600 hover:text-blue-800 cursor-pointer"
                           >
                             ×
                           </button>
@@ -409,7 +409,7 @@ export default function SignUp() {
                   <button
                     type="button"
                     onClick={handleNextStep}
-                    className="text-blue-600 hover:text-blue-700 font-medium"
+                    className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
                   >
                     Skip for now
                   </button>
@@ -454,7 +454,7 @@ export default function SignUp() {
                       <button
                         type="button"
                         onClick={handleSkillConfirm}
-                        className="px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                        className="px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 cursor-pointer"
                       >
                         Confirm
                       </button>
@@ -472,7 +472,7 @@ export default function SignUp() {
                           <button
                             type="button"
                             onClick={() => removeSkill(skill)}
-                            className="ml-2 text-blue-600 hover:text-blue-800"
+                            className="ml-2 text-blue-600 hover:text-blue-800 cursor-pointer"
                           >
                             ×
                           </button>
@@ -520,7 +520,7 @@ export default function SignUp() {
             <button
               type="button"
               onClick={handlePrevStep}
-              className={`flex items-center space-x-2 px-6 py-3 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition-colors ${
+              className={`flex items-center space-x-2 px-6 py-3 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer ${
                 step === 1 ? "invisible" : ""
               }`}
             >
@@ -544,7 +544,7 @@ export default function SignUp() {
               <button
                 type="button"
                 onClick={handleNextStep}
-                className="px-8 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors font-medium"
+                className="px-8 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors font-medium cursor-pointer"
               >
                 Next
               </button>
@@ -552,7 +552,7 @@ export default function SignUp() {
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="px-8 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors font-medium"
+                className="px-8 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors font-medium cursor-pointer"
               >
                 Create Account
               </button>
