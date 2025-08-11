@@ -1,30 +1,106 @@
-import { useState } from 'react';
-import Link from 'next/link';
+import { useState } from "react";
+import Link from "next/link";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    jobTitle: '',
-    experience: '',
-    agreeToTerms: false
+    email: "",
+    password: "",
+    confirmPassword: "",
+    resume: null as File | null,
+    jobTitle: "",
+    jobTitles: [] as string[],
+    salaryExpectation: "",
+    skills: [] as string[],
+    skillInput: "",
+    workLocation: "",
+    agreeToTerms: false,
   });
 
   const [step, setStep] = useState(1);
+  const [dragActive, setDragActive] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value, type } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+      [name]:
+        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
   };
 
+  const handleFileUpload = (file: File) => {
+    setFormData((prev) => ({ ...prev, resume: file }));
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileUpload(e.dataTransfer.files[0]);
+    }
+  };
+
+  const addJobTitle = () => {
+    if (
+      formData.jobTitle.trim() &&
+      !formData.jobTitles.includes(formData.jobTitle.trim())
+    ) {
+      setFormData((prev) => ({
+        ...prev,
+        jobTitles: [...prev.jobTitles, prev.jobTitle.trim()],
+        jobTitle: "",
+      }));
+    }
+  };
+
+  const removeJobTitle = (title: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      jobTitles: prev.jobTitles.filter((t) => t !== title),
+    }));
+  };
+
+  const addSkill = (skill: string) => {
+    if (skill.trim() && !formData.skills.includes(skill.trim())) {
+      setFormData((prev) => ({
+        ...prev,
+        skills: [...prev.skills, skill.trim()],
+      }));
+    }
+  };
+
+  const removeSkill = (skill: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      skills: prev.skills.filter((s) => s !== skill),
+    }));
+  };
+
+  const handleSkillConfirm = () => {
+    if (formData.skillInput.trim()) {
+      addSkill(formData.skillInput);
+      setFormData((prev) => ({ ...prev, skillInput: "" }));
+    }
+  };
+
   const handleNextStep = () => {
-    if (step < 3) setStep(step + 1);
+    if (step < 5) setStep(step + 1);
   };
 
   const handlePrevStep = () => {
@@ -33,256 +109,455 @@ export default function SignUp() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Signup data:", formData);
     // Handle signup logic here
-    console.log('Signup data:', formData);
   };
 
+  const suggestedSkills = [
+    "Agile",
+    "JIRA",
+    "Software testing and implementation",
+    "Testing and deployment",
+    "Design and development",
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <Link href="/" className="inline-flex items-center mb-8">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-              C
-            </div>
-            <span className="ml-3 text-2xl font-bold text-gray-900">Carevo</span>
-          </Link>
-          <h2 className="text-3xl font-bold text-gray-900">Create Your Account</h2>
-          <p className="mt-2 text-gray-600">Start your AI-powered job search journey</p>
-        </div>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <Link href="/" className="inline-flex items-center">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+            C
+          </div>
+          <span className="ml-3 text-xl font-bold text-gray-900">carevo</span>
+        </Link>
+      </div>
 
-        {/* Progress Bar */}
-        <div className="flex items-center justify-center space-x-4 mb-8">
-          {[1, 2, 3].map((stepNumber) => (
-            <div key={stepNumber} className="flex items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                step >= stepNumber 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-gray-200 text-gray-600'
-              }`}>
-                {stepNumber}
-              </div>
-              {stepNumber < 3 && (
-                <div className={`w-12 h-1 mx-2 ${
-                  step > stepNumber ? 'bg-blue-600' : 'bg-gray-200'
-                }`} />
-              )}
-            </div>
-          ))}
-        </div>
-
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          {/* Step 1: Basic Information */}
-          {step === 1 && (
-            <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
-              <h3 className="text-xl font-semibold text-gray-900 text-center">Basic Information</h3>
-              
-              <div className="grid grid-cols-2 gap-4">
+      <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex items-center justify-center py-12 px-4">
+          <div className="max-w-2xl w-full">
+            {/* Step 1: Account Creation */}
+            {step === 1 && (
+              <div className="text-center space-y-8">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    Create your account
+                  </h1>
+                  <p className="text-lg text-gray-600">
+                    Start your AI-powered job search journey
+                  </p>
                 </div>
+
+                <div className="max-w-md mx-auto space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                      Email address
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="your@email.com"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="••••••••••"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="••••••••••"
+                      required
+                    />
+                  </div>
+
+                  <p className="text-center text-sm text-gray-600">
+                    Already have an account?{" "}
+                    <Link
+                      href="/login"
+                      className="text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      Log in
+                    </Link>
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Resume Upload */}
+            {step === 2 && (
+              <div className="text-center space-y-8">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    Upload your resume to get great matches
+                  </h1>
+                  <p className="text-lg text-gray-600">
+                    Your resume will also help us complete applications faster.
+                  </p>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
+                <div className="max-w-lg mx-auto">
+                  <div
+                    className={`border-2 border-dashed rounded-2xl p-12 transition-colors ${
+                      dragActive
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-gray-300 bg-white hover:border-gray-400"
+                    }`}
+                    onDragEnter={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDragOver={handleDrag}
+                    onDrop={handleDrop}
+                  >
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg
+                          className="w-8 h-8 text-green-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                          Upload your resume
+                        </h3>
+                        <p className="text-gray-600">
+                          We'll auto-fill your answers.
+                        </p>
+                      </div>
+                      {formData.resume && (
+                        <div className="text-sm text-green-600 font-medium">
+                          ✓ {formData.resume.name} uploaded
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={(e) =>
+                        e.target.files?.[0] &&
+                        handleFileUpload(e.target.files[0])
+                      }
+                      className="hidden"
+                      id="resume-upload"
+                    />
+                  </div>
+                  <label
+                    htmlFor="resume-upload"
+                    className="mt-4 inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors"
+                  >
+                    Choose File
+                  </label>
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={handleNextStep}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                Continue
-              </button>
-            </div>
-          )}
-
-          {/* Step 2: Professional Information */}
-          {step === 2 && (
-            <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
-              <h3 className="text-xl font-semibold text-gray-900 text-center">Professional Information</h3>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Current Job Title</label>
-                <input
-                  type="text"
-                  name="jobTitle"
-                  value={formData.jobTitle}
-                  onChange={handleInputChange}
-                  placeholder="e.g., Senior Frontend Developer"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Years of Experience</label>
-                <select
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                >
-                  <option value="">Select experience level</option>
-                  <option value="0-1">0-1 years</option>
-                  <option value="2-3">2-3 years</option>
-                  <option value="4-6">4-6 years</option>
-                  <option value="7-10">7-10 years</option>
-                  <option value="10+">10+ years</option>
-                </select>
-              </div>
-
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-medium text-blue-900 mb-2">What's Next?</h4>
-                <p className="text-sm text-blue-700">
-                  After signup, you'll upload your resume and set job preferences. Our AI will start finding opportunities immediately.
-                </p>
-              </div>
-
-              <div className="flex space-x-4">
-                <button
-                  type="button"
-                  onClick={handlePrevStep}
-                  className="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-                >
-                  Back
-                </button>
                 <button
                   type="button"
                   onClick={handleNextStep}
-                  className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  className="text-blue-600 hover:text-blue-700 font-medium underline"
                 >
-                  Continue
+                  Skip for now
                 </button>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Step 3: Terms and Confirmation */}
-          {step === 3 && (
-            <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
-              <h3 className="text-xl font-semibold text-gray-900 text-center">Almost Done!</h3>
-              
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Name:</span>
-                  <span className="font-medium">{formData.firstName} {formData.lastName}</span>
+            {/* Step 3: Job Preferences */}
+            {step === 3 && (
+              <div className="text-center space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    What kind of jobs are you looking for?
+                  </h1>
+                  <p className="text-lg text-gray-600">
+                    We recommend up to 5 titles to get a great list of jobs.
+                  </p>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Email:</span>
-                  <span className="font-medium">{formData.email}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Job Title:</span>
-                  <span className="font-medium">{formData.jobTitle}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Experience:</span>
-                  <span className="font-medium">{formData.experience} years</span>
+
+                <div className="max-w-lg mx-auto space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                      Job title, keyword or category
+                    </label>
+                    <div className="flex space-x-2">
+                      <input
+                        type="text"
+                        name="jobTitle"
+                        value={formData.jobTitle}
+                        onChange={handleInputChange}
+                        onKeyDown={(e) =>
+                          e.key === "Enter" &&
+                          (e.preventDefault(), addJobTitle())
+                        }
+                        className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Software Engineer"
+                      />
+                      <button
+                        type="button"
+                        onClick={addJobTitle}
+                        className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+
+                  {formData.jobTitles.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {formData.jobTitles.map((title, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
+                        >
+                          {title}
+                          <button
+                            type="button"
+                            onClick={() => removeJobTitle(title)}
+                            className="ml-2 text-blue-600 hover:text-blue-800"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {formData.jobTitles.length > 0 && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <p className="text-blue-800 text-sm">
+                        Great news! We've found jobs for you.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
+            )}
 
-              <div className="flex items-start space-x-3">
-                <input
-                  type="checkbox"
-                  name="agreeToTerms"
-                  checked={formData.agreeToTerms}
-                  onChange={handleInputChange}
-                  className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  required
+            {/* Step 4: Salary Expectations */}
+            {step === 4 && (
+              <div className="text-center space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    How much would you like to earn?
+                    <span className="inline-flex items-center ml-2">
+                      <svg
+                        className="w-5 h-5 text-blue-600"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </h1>
+                </div>
+
+                <div className="max-w-lg mx-auto space-y-8">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                      Minimum desired compensation
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-3 text-gray-500">
+                        $
+                      </span>
+                      <input
+                        type="text"
+                        name="salaryExpectation"
+                        value={formData.salaryExpectation}
+                        onChange={handleInputChange}
+                        className="w-full border border-gray-300 rounded-lg pl-8 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="75,000"
+                      />
+                    </div>
+                    <p className="text-sm text-gray-500 mt-2 text-left">
+                      Enter your desired annual salary
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleNextStep}
+                    className="text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    Skip for now
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 5: Skills */}
+            {step === 5 && (
+              <div className="text-center space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    What skills would you like to highlight to employers?
+                  </h1>
+                  <p className="text-lg text-gray-600">
+                    Choose 3 or more to help stand out.
+                  </p>
+                </div>
+
+                <div className="max-w-lg mx-auto space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                      Enter 3 or more skills or tools
+                    </label>
+                    <div className="flex space-x-2">
+                      <input
+                        type="text"
+                        value={formData.skillInput}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            skillInput: e.target.value,
+                          }))
+                        }
+                        onKeyDown={(e) =>
+                          e.key === "Enter" &&
+                          (e.preventDefault(), handleSkillConfirm())
+                        }
+                        className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Critical Thinking, Communication, Excel, etc."
+                      />
+                      <button
+                        type="button"
+                        onClick={handleSkillConfirm}
+                        className="px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                      >
+                        Confirm
+                      </button>
+                    </div>
+                  </div>
+
+                  {formData.skills.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {formData.skills.map((skill, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
+                        >
+                          {skill}
+                          <button
+                            type="button"
+                            onClick={() => removeSkill(skill)}
+                            className="ml-2 text-blue-600 hover:text-blue-800"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
+                    <p className="text-sm text-gray-600 text-left">
+                      Suggested skills:
+                    </p>
+                    <div className="space-y-2">
+                      {suggestedSkills.map((skill, index) => (
+                        <label
+                          key={index}
+                          className="flex items-center space-x-3 text-left"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={formData.skills.includes(skill)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                addSkill(skill);
+                              } else {
+                                removeSkill(skill);
+                              }
+                            }}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                          <span className="text-sm text-gray-700">{skill}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Fixed Footer Navigation */}
+        <div className="bg-white border-t border-gray-200 px-6 py-4">
+          <div className="max-w-2xl mx-auto flex justify-between items-center">
+            <button
+              type="button"
+              onClick={handlePrevStep}
+              className={`flex items-center space-x-2 px-6 py-3 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition-colors ${
+                step === 1 ? "invisible" : ""
+              }`}
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
                 />
-                <label className="text-sm text-gray-700">
-                  I agree to the{' '}
-                  <Link href="/terms" className="text-blue-600 hover:text-blue-700">
-                    Terms of Service
-                  </Link>{' '}
-                  and{' '}
-                  <Link href="/privacy" className="text-blue-600 hover:text-blue-700">
-                    Privacy Policy
-                  </Link>
-                </label>
-              </div>
+              </svg>
+              <span>Back</span>
+            </button>
 
-              <div className="flex space-x-4">
-                <button
-                  type="button"
-                  onClick={handlePrevStep}
-                  className="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-                >
-                  Back
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                >
-                  Create Account
-                </button>
-              </div>
-            </div>
-          )}
-        </form>
-
-        {/* Login Link */}
-        <div className="text-center">
-          <p className="text-gray-600">
-            Already have an account?{' '}
-            <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
-              Sign in
-            </Link>
-          </p>
+            {step < 5 ? (
+              <button
+                type="button"
+                onClick={handleNextStep}
+                className="px-8 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors font-medium"
+              >
+                Next
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleSubmit}
+                className="px-8 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors font-medium"
+              >
+                Create Account
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
