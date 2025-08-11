@@ -124,7 +124,7 @@ export default function SignUp() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-white border-b border-gray-200 sticky top-0 px-6 py-4">
         <Link href="/" className="inline-flex items-center">
           <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
             C
