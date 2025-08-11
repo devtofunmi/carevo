@@ -2,12 +2,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 const navigation = [
-  { name: 'Dashboard', href: '/admin', icon: '📊' },
-  { name: 'Users', href: '/admin/users', icon: '👥' },
-  { name: 'Applications', href: '/admin/applications', icon: '📝' },
-  { name: 'Job Boards', href: '/admin/job-boards', icon: '🔗' },
-  { name: 'Analytics', href: '/admin/analytics', icon: '📈' },
-  { name: 'Settings', href: '/admin/settings', icon: '⚙️' },
+  { name: 'Dashboard', href: '/admin', icon: '' },
+  { name: 'Users', href: '/admin/users', icon: '' },
+  { name: 'Applications', href: '/admin/applications', icon: '' },
+  { name: 'Job Boards', href: '/admin/job-boards', icon: '' },
+  { name: 'Analytics', href: '/admin/analytics', icon: '' },
+  { name: 'Settings', href: '/admin/settings', icon: '' },
 ];
 
 export default function AdminSidebar() {
@@ -17,7 +17,7 @@ export default function AdminSidebar() {
     <div className="fixed inset-y-0 left-0 w-64 bg-gray-900 shadow-lg">
       <div className="flex h-16 items-center px-6 border-b border-gray-800">
         <div className="flex items-center">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
             C
           </div>
           <span className="ml-3 text-xl font-bold text-white">Carevo Admin</span>
@@ -38,7 +38,6 @@ export default function AdminSidebar() {
                     : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                 }`}
               >
-                <span className="mr-3 text-lg">{item.icon}</span>
                 {item.name}
               </Link>
             );

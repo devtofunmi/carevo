@@ -7,14 +7,7 @@ export default function AdminHeader() {
         </div>
         
         <div className="flex items-center space-x-4">
-          <div className="relative">
-            <button className="p-2 text-gray-400 hover:text-gray-600 relative">
-              <span className="text-xl">🔔</span>
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-                5
-              </span>
-            </button>
-          </div>
+
           
           <div className="flex items-center space-x-3">
             <div className="text-right">
