@@ -195,7 +195,7 @@ export default function LandingPage() {
             <div className="lg:pl-8">
               <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 We apply.
-                <sup className="text-blue-600">You get hired.</sup>
+                <span className="text-blue-600">You get hired.</span>
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                 Carevo works nonstop —
