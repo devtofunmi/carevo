@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard" },
@@ -17,6 +18,17 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const router = useRouter();
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   return (
     <>
@@ -35,11 +47,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       {/* Sidebar */}
       <motion.div
-        className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-50 lg:translate-x-0"
-        initial={{ x: -256 }}
-        animate={{ x: isOpen ? 0 : -256 }}
+        className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-50"
+        initial={false}
+        animate={{ 
+          x: isLargeScreen ? 0 : (isOpen ? 0 : -256)
+        }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        style={{ translateX: "var(--tw-translate-x)" }}
       >
         <div className="flex h-16 items-center px-4 sm:px-6 border-b border-gray-200">
           <div className="flex items-center">
