@@ -32,7 +32,7 @@ export default function Profile() {
     <Layout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
+          <h1 className="text-3xl font-bold text-gray-900"></h1>
           <button
             onClick={() => isEditing ? handleSave() : setIsEditing(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
