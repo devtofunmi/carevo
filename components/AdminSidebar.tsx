@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: '' },
@@ -10,51 +12,127 @@ const navigation = [
   { name: 'Settings', href: '/admin/settings', icon: '' },
 ];
 
-export default function AdminSidebar() {
+interface AdminSidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const router = useRouter();
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   return (
-    <div className="fixed inset-y-0 left-0 w-64 bg-gray-900 shadow-lg">
-      <div className="flex h-16 items-center px-6 border-b border-gray-800">
-        <div className="flex items-center">
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-            C
-          </div>
-          <span className="ml-3 text-xl font-bold text-white">Carevo Admin</span>
-        </div>
-      </div>
-      
-      <nav className="mt-6 px-3">
-        <div className="space-y-1">
-          {navigation.map((item) => {
-            const isActive = router.pathname === item.href;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                  isActive
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                }`}
-              >
-                {item.name}
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+    <>
+      {/* Mobile overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+          />
+        )}
+      </AnimatePresence>
 
-      <div className="absolute bottom-6 left-3 right-3">
-        <div className="bg-gray-800 rounded-lg p-4 text-white">
-          <div className="text-sm font-medium">System Status</div>
-          <div className="flex items-center mt-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="ml-2 text-xs text-gray-300">All systems operational</span>
+      {/* Sidebar */}
+      <motion.div
+        className="fixed inset-y-0 left-0 w-64 bg-gray-900 shadow-lg z-50"
+        initial={false}
+        animate={{ 
+          x: isLargeScreen ? 0 : (isOpen ? 0 : -256)
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
+        <div className="flex h-16 items-center px-4 sm:px-6 border-b border-gray-800">
+          <div className="flex items-center">
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+              C
+            </div>
+            <span className="ml-3 text-lg sm:text-xl font-bold text-white">Carevo Admin</span>
           </div>
-          <div className="text-xs text-gray-400 mt-1">Uptime: 99.9%</div>
+          
+          {/* Close button for mobile */}
+          <button
+            onClick={onClose}
+            className="ml-auto lg:hidden p-2 text-gray-400 hover:text-white"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-      </div>
-    </div>
+        
+        <nav className="mt-6 px-3">
+          <div className="space-y-1">
+            {navigation.map((item, index) => {
+              const isActive = router.pathname === item.href;
+              return (
+                <motion.div
+                  key={item.name}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.3 }}
+                >
+                  <Link
+                    href={item.href}
+                    onClick={onClose}
+                    className={`group flex items-center px-3 py-2 text-sm font-medium rounded-lg ${
+                      isActive
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                    }`}
+                  >
+                    <motion.span
+                      whileHover={{ scale: 1.05, x: 4 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      {item.name}
+                    </motion.span>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+        </nav>
+
+        <motion.div 
+          className="absolute bottom-6 left-3 right-3"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.3 }}
+        >
+          <motion.div 
+            className="bg-gray-800 rounded-lg p-3 sm:p-4 text-white cursor-pointer"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <div className="text-sm font-medium">System Status</div>
+            <div className="flex items-center mt-2">
+              <motion.div 
+                className="w-2 h-2 bg-green-400 rounded-full"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              <span className="ml-2 text-xs text-gray-300">All systems operational</span>
+            </div>
+            <div className="text-xs text-gray-400 mt-1">Uptime: 99.9%</div>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+    </>
   );
 }
