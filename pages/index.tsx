@@ -1,6 +1,51 @@
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 
+// A reusable wrapper component for scroll-triggered animations
+const MotionSection = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  const controls = useAnimation();
+  const [ref, inView] = useInView({
+    triggerOnce: false, // Trigger the animation every time
+    threshold: 0.2, // Trigger when 20% of the element is in view
+  });
+
+  useEffect(() => {
+    if (inView) {
+      controls.start("visible");
+    }
+  }, [controls, inView]);
+
+  const variants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" as const },
+    },
+  };
+
+  return (
+    <motion.section
+      ref={ref}
+      initial="hidden"
+      animate={controls}
+      variants={variants}
+      className={className}
+    >
+      {children}
+    </motion.section>
+  );
+};
+
+// FAQ Section component with Framer Motion animations
 function FAQSection() {
   const [openItems, setOpenItems] = useState<number[]>([]);
 
@@ -31,14 +76,25 @@ function FAQSection() {
       answer:
         "Our Job Tracker is a comprehensive dashboard that monitors all your applications in real-time. It tracks application status, interview schedules, follow-ups, and provides analytics on your job search performance to help you optimize your strategy.",
     },
-   
   ];
 
+  const variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="space-y-4">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      transition={{ staggerChildren: 0.1 }}
+      className="space-y-4"
+    >
       {faqItems.map((item, index) => (
-        <div
+        <motion.div
           key={index}
+          variants={variants}
+          transition={{ duration: 0.4 }}
           className="bg-white rounded-xl border border-gray-200 overflow-hidden"
         >
           <button
@@ -48,10 +104,10 @@ function FAQSection() {
             <h3 className="text-lg font-semibold text-gray-900 pr-4">
               {item.question}
             </h3>
-            <svg
-              className={`w-5 h-5 text-gray-500 transition-transform duration-200 flex-shrink-0 ${
-                openItems.includes(index) ? "rotate-180" : ""
-              }`}
+            <motion.svg
+              animate={{ rotate: openItems.includes(index) ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+              className="w-5 h-5 text-gray-500 flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -62,26 +118,79 @@ function FAQSection() {
                 strokeWidth={2}
                 d="M19 9l-7 7-7-7"
               />
-            </svg>
+            </motion.svg>
           </button>
-          {openItems.includes(index) && (
-            <div className="px-6 pb-5">
-              <p className="text-gray-600 leading-relaxed">{item.answer}</p>
-            </div>
-          )}
-        </div>
+          <AnimatePresence>
+            {openItems.includes(index) && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="px-6 pb-5"
+              >
+                <p className="text-gray-600 leading-relaxed">{item.answer}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }
 
 export default function LandingPage() {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1, // Stagger the children by 0.1 seconds
+      },
+    },
+  };
+
+  // Variants for the hero cards, creating a bounce/pop-in effect
+  const cardVariants = {
+    hidden: { opacity: 0, y: 50, rotate: 10, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      rotate: 0,
+      scale: 1,
+      transition: {
+        type: "spring" as const,
+        stiffness: 260,
+        damping: 20,
+      },
+    },
+  };
+
+  // Variants for the hero image, giving it a subtle entrance
+  const imageVariants = {
+    hidden: { opacity: 0, x: 50, rotate: 5 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      rotate: 0,
+      transition: {
+        delay: 0.5,
+        duration: 0.8,
+      },
+    },
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Navigation */}
       <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <motion.div
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex justify-between items-center h-16"
+          >
             <div className="flex items-center">
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
                 C
@@ -104,20 +213,27 @@ export default function LandingPage() {
                 Get Started
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-16 pb-20">
+      <MotionSection className="pt-16 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left side - Job Application Cards */}
+            {/* Left side - Job Application Cards & Image */}
             <div className="relative min-h-[500px]">
-              {/* Job Application Cards Container */}
-              <div className="absolute left-0 top-0 w-80 space-y-4 z-10">
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="absolute left-0 top-0 w-80 space-y-4 z-10"
+              >
                 {/* Job Application Card 1 */}
-                <div className="bg-white rounded-2xl shadow-lg p-4 border border-gray-100 transform -rotate-2 hover:rotate-0 transition-transform duration-300 w-72">
+                <motion.div
+                  variants={cardVariants}
+                  className="bg-white rounded-2xl shadow-lg p-4 border border-gray-100 transform -rotate-2 w-72"
+                >
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
                       <span className="text-white font-bold text-sm">✓</span>
@@ -129,10 +245,12 @@ export default function LandingPage() {
                       <div className="text-sm text-gray-500">✓ Applied</div>
                     </div>
                   </div>
-                </div>
-
+                </motion.div>
                 {/* Job Application Card 2 */}
-                <div className="bg-white rounded-2xl shadow-lg p-4 border border-gray-100 transform rotate-1 hover:rotate-0 transition-transform duration-300 w-72 ml-8">
+                <motion.div
+                  variants={cardVariants}
+                  className="bg-white rounded-2xl shadow-lg p-4 border border-gray-100 transform rotate-1 w-72 ml-8"
+                >
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
                       <span className="text-white font-bold text-sm">✓</span>
@@ -144,10 +262,12 @@ export default function LandingPage() {
                       <div className="text-sm text-gray-500">✓ Applied</div>
                     </div>
                   </div>
-                </div>
-
+                </motion.div>
                 {/* Job Application Card 3 */}
-                <div className="bg-white rounded-2xl shadow-lg p-4 border border-gray-100 transform -rotate-1 hover:rotate-0 transition-transform duration-300 w-72">
+                <motion.div
+                  variants={cardVariants}
+                  className="bg-white rounded-2xl shadow-lg p-4 border border-gray-100 transform -rotate-1 w-72"
+                >
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
                       <span className="text-white font-bold text-sm">✓</span>
@@ -159,10 +279,12 @@ export default function LandingPage() {
                       <div className="text-sm text-gray-500">✓ Applied</div>
                     </div>
                   </div>
-                </div>
-
+                </motion.div>
                 {/* Job Application Card 4 */}
-                <div className="bg-white rounded-2xl shadow-lg p-4 border border-gray-100 transform rotate-2 hover:rotate-0 transition-transform duration-300 w-72 ml-6">
+                <motion.div
+                  variants={cardVariants}
+                  className="bg-white rounded-2xl shadow-lg p-4 border border-gray-100 transform rotate-2 w-72 ml-6"
+                >
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
                       <span className="text-white font-bold text-sm">✓</span>
@@ -174,37 +296,61 @@ export default function LandingPage() {
                       <div className="text-sm text-gray-500">✓ Applied</div>
                     </div>
                   </div>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
               {/* Person Image */}
-              <div className="absolute right-0 top-12 w-72 h-96 bg-gradient-to-br from-orange-100 to-orange-200 rounded-3xl overflow-hidden shadow-2xl">
+              <motion.div
+                variants={imageVariants}
+                initial="hidden"
+                animate="visible"
+                className="absolute right-0 top-12 w-72 h-96 bg-gradient-to-br from-orange-100 to-orange-200 rounded-3xl overflow-hidden shadow-2xl"
+              >
                 <div className="w-full h-full flex items-end justify-center p-4">
-                  <div className="w-56 h-80 rounded-2xl overflow-hidden bg-white shadow-lg">
+                  <motion.div
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 1, duration: 0.6 }}
+                    className="w-56 h-80 rounded-2xl overflow-hidden bg-white shadow-lg"
+                  >
                     <img
                       src="/do.jpg"
                       alt="Professional using Carevo"
                       className="w-full h-full object-cover object-center"
                     />
-                  </div>
+                  </motion.div>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             {/* Right side - Content */}
             <div className="lg:pl-8">
-              <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                We apply.
-                <span className="text-blue-600">You get hired.</span>
-              </h1>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight"
+              >
+                We apply. <span className="text-blue-600">You get hired.</span>
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+                className="text-xl text-gray-600 mb-8 leading-relaxed"
+              >
                 Carevo works nonstop —
                 <span className="font-semibold text-gray-900">
                   finding and applying
                 </span>{" "}
                 to the right jobs for you until you’re hired.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+                className="flex flex-col sm:flex-row gap-4"
+              >
                 <Link
                   href="/signup"
                   className="bg-blue-600 text-white px-8 py-4 rounded-full hover:bg-blue-700 transition-colors font-semibold text-lg inline-flex items-center justify-center"
@@ -224,17 +370,16 @@ export default function LandingPage() {
                     />
                   </svg>
                 </Link>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
-      </section>
+      </MotionSection>
 
       {/* Testimonial Section */}
-      <section className="pb-20">
+      <MotionSection className="pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            {/* User Avatars */}
             <div className="flex justify-center">
               <img
                 src="/Image-1.png"
@@ -252,27 +397,22 @@ export default function LandingPage() {
                 className="w-10 h-10 rounded-full border-2 border-white"
               />
             </div>
-
-            {/* Testimonial Quote */}
             <blockquote className="text-xl font-medium text-gray-700 italic leading-relaxed">
               "Recruiters from Amazon, Wise,
               <br /> and other big names are already in my inbox!"
             </blockquote>
           </div>
         </div>
-      </section>
+      </MotionSection>
 
       {/* Before/After Comparison Section */}
-      <section className="py-20 bg-gray-50">
+      <MotionSection className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            {/* Before - Problems */}
             <div className="space-y-6">
               <h3 className="text-2xl font-bold text-gray-900 mb-8">
                 Without Carevo
               </h3>
-
-              {/* Problem 1 */}
               <div className="bg-white rounded-xl p-6 border border-red-100 shadow-sm">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -301,8 +441,6 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-
-              {/* Problem 2 */}
               <div className="bg-white rounded-xl p-6 border border-red-100 shadow-sm">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -331,8 +469,6 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-
-              {/* Problem 3 */}
               <div className="bg-white rounded-xl p-6 border border-red-100 shadow-sm">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -362,14 +498,10 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-
-            {/* After - Solutions */}
             <div className="space-y-6">
               <h3 className="text-2xl flex justify-end font-bold text-gray-900 mb-8">
                 With Carevo
               </h3>
-
-              {/* Solution 1 */}
               <div className="bg-white rounded-xl p-6 border border-green-100 shadow-sm">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -397,8 +529,6 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-
-              {/* Solution 2 */}
               <div className="bg-white rounded-xl p-6 border border-green-100 shadow-sm">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -427,8 +557,6 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-
-              {/* Solution 3 */}
               <div className="bg-white rounded-xl p-6 border border-green-100 shadow-sm">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -460,10 +588,10 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
+      </MotionSection>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
+      <MotionSection className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -487,7 +615,6 @@ export default function LandingPage() {
                 looking for. Takes less than 5 minutes.
               </p>
             </div>
-
             <div className="text-center p-8 rounded-xl bg-purple-50 border border-purple-100">
               <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6">
                 2
@@ -500,7 +627,6 @@ export default function LandingPage() {
                 on your behalf with personalized cover letters.
               </p>
             </div>
-
             <div className="text-center p-8 rounded-xl bg-green-50 border border-green-100">
               <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6">
                 3
@@ -515,10 +641,10 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
+      </MotionSection>
 
       {/* Stats Section */}
-      <section className="py-20 bg-blue-600 text-white">
+      <MotionSection className="py-20 bg-blue-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">
@@ -548,10 +674,10 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
+      </MotionSection>
 
       {/* Benefits Section */}
-      <section className="py-20">
+      <MotionSection className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -646,10 +772,10 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
+      </MotionSection>
 
       {/* Pricing Section */}
-      <section className="py-20 bg-gray-50">
+      <MotionSection className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -737,7 +863,6 @@ export default function LandingPage() {
                   Most Popular
                 </span>
               </div>
-
               <div className="text-center">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Pro</h3>
                 <div className="text-4xl font-bold text-gray-900 mb-1">$29</div>
@@ -746,7 +871,7 @@ export default function LandingPage() {
                 <ul className="space-y-4 mb-8 text-left">
                   <li className="flex items-center">
                     <svg
-                      className="w-5 h-5 text-green-500 mr-3"
+                      className="w-5 h-5 text-blue-500 mr-3"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -758,13 +883,13 @@ export default function LandingPage() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span className="text-gray-600">
-                      100 applications per month
+                    <span className="text-gray-600 font-semibold">
+                      Unlimited applications
                     </span>
                   </li>
                   <li className="flex items-center">
                     <svg
-                      className="w-5 h-5 text-green-500 mr-3"
+                      className="w-5 h-5 text-blue-500 mr-3"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -776,11 +901,13 @@ export default function LandingPage() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span className="text-gray-600">Advanced AI matching</span>
+                    <span className="text-gray-600 font-semibold">
+                      Advanced AI matching
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <svg
-                      className="w-5 h-5 text-green-500 mr-3"
+                      className="w-5 h-5 text-blue-500 mr-3"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -792,11 +919,86 @@ export default function LandingPage() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span className="text-gray-600">Custom cover letters</span>
+                    <span className="text-gray-600 font-semibold">
+                      Personalized applications
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <svg
-                      className="w-5 h-5 text-green-500 mr-3"
+                      className="w-5 h-5 text-blue-500 mr-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    <span className="text-gray-600 font-semibold">
+                      Real-time dashboard
+                    </span>
+                  </li>
+                </ul>
+
+                <Link
+                  href="/signup"
+                  className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 transition-colors inline-block text-center"
+                >
+                  Start Pro Plan
+                </Link>
+              </div>
+            </div>
+
+            {/* Enterprise Plan */}
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 relative">
+              <div className="text-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Enterprise
+                </h3>
+                <div className="text-4xl font-bold text-gray-900 mb-1">
+                  Custom
+                </div>
+                <div className="text-gray-500 mb-6">per month</div>
+
+                <ul className="space-y-4 mb-8 text-left">
+                  <li className="flex items-center">
+                    <svg
+                      className="w-5 h-5 text-purple-500 mr-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    <span className="text-gray-600">All Pro features</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      className="w-5 h-5 text-purple-500 mr-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    <span className="text-gray-600">Dedicated AI agent</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      className="w-5 h-5 text-purple-500 mr-3"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -810,30 +1012,9 @@ export default function LandingPage() {
                     </svg>
                     <span className="text-gray-600">Priority support</span>
                   </li>
-                </ul>
-
-                <Link
-                  href="/signup"
-                  className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 transition-colors inline-block text-center"
-                >
-                  Start Pro Trial
-                </Link>
-              </div>
-            </div>
-
-            {/* Enterprise Plan */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 relative">
-              <div className="text-center">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  Enterprise
-                </h3>
-                <div className="text-4xl font-bold text-gray-900 mb-1">$99</div>
-                <div className="text-gray-500 mb-6">per month</div>
-
-                <ul className="space-y-4 mb-8 text-left">
                   <li className="flex items-center">
                     <svg
-                      className="w-5 h-5 text-green-500 mr-3"
+                      className="w-5 h-5 text-purple-500 mr-3"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -845,82 +1026,24 @@ export default function LandingPage() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span className="text-gray-600">
-                      Unlimited applications
-                    </span>
-                  </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="w-5 h-5 text-green-500 mr-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="text-gray-600">Personal job coach</span>
-                  </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="w-5 h-5 text-green-500 mr-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="text-gray-600">Interview preparation</span>
-                  </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="w-5 h-5 text-green-500 mr-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="text-gray-600">
-                      24/7 dedicated support
-                    </span>
+                    <span className="text-gray-600">Custom integrations</span>
                   </li>
                 </ul>
 
                 <Link
-                  href="/signup"
-                  className="w-full bg-gray-900 text-white py-3 px-6 rounded-xl font-semibold hover:bg-gray-800 transition-colors inline-block text-center"
+                  href="/contact"
+                  className="w-full bg-gray-100 text-gray-900 py-3 px-6 rounded-xl font-semibold hover:bg-gray-200 transition-colors inline-block text-center"
                 >
-                  Contact Sales
+                  Contact Us
                 </Link>
               </div>
             </div>
-          </div>
-
-          <div className="text-center mt-12">
-            <p className="text-gray-600">
-              All plans include a 14-day free trial. No credit card required.
-            </p>
           </div>
         </div>
-      </section>
+      </MotionSection>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-blue-50">
+      <MotionSection className="py-20 bg-blue-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -933,10 +1056,10 @@ export default function LandingPage() {
 
           <FAQSection />
         </div>
-      </section>
+      </MotionSection>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gray-900 text-white">
+      <MotionSection className="py-20 bg-gray-900 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-6">
             Ready to Transform Your Job Search?
@@ -955,7 +1078,7 @@ export default function LandingPage() {
             No credit card required • 14-day free trial
           </p>
         </div>
-      </section>
+      </MotionSection>
 
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 py-12">
