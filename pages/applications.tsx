@@ -83,9 +83,7 @@ export default function Applications() {
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0"
           variants={itemVariants}
         >
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            Job Applications
-          </h1>
+         
           <div className="flex items-center space-x-2 sm:space-x-4">
             <select
               value={sortBy}
