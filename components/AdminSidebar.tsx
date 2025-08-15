@@ -60,7 +60,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
               C
             </div>
-            <span className="ml-3 text-lg sm:text-xl font-bold text-white">Carevo Admin</span>
+            <span className="ml-3 text-lg sm:text-xl font-bold text-white">Admin</span>
           </div>
           
           {/* Close button for mobile */}
